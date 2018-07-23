@@ -1032,7 +1032,7 @@ public final class Project { // swiftlint:disable:this type_body_length
 					return dependenciesIncludingNext
 				}
 			}
-			.flatMap(.concat) { dependencies -> SignalProducer<(Dependency, PinnedVersion), CarthageError> in
+			.flatMap(.concat) { (dependencies: [(Dependency, PinnedVersion)]) -> SignalProducer<(Dependency, PinnedVersion), CarthageError> in
 				return SignalProducer(dependencies)
 					.flatMap(.concurrent(limit: 4)) { dependency, version -> SignalProducer<(Dependency, PinnedVersion), CarthageError> in
 						switch dependency {
@@ -1083,7 +1083,7 @@ public final class Project { // swiftlint:disable:this type_body_length
 						return symlinkBuildPath(for: dependency, rootDirectoryURL: self.directoryURL)
 					}
 					.then(build(dependency: dependency, version: version, self.directoryURL, withOptions: options, sdkFilter: sdkFilter))
-					.flatMapError { error in
+					.flatMapError { error -> BuildSchemeProducer in
 						switch error {
 						case .noSharedFrameworkSchemes:
 							// Log that building the dependency is being skipped,
